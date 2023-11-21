@@ -48,7 +48,7 @@ function databaseGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow) 
   limitRow = !limitRow || offsetRow + limitRow >= filteredValues.length ? limitRow = filteredValues.length : offsetRow + limitRow; // 取得個数が未設定またはデータ数以上の場合はデータ数に置き換え
 
   // データの連想配列化
-  for (var i = offsetRow; i < limitRow; i++) {
+  for (let i = offsetRow; i < limitRow; i++) {
     let row = filteredValues[i];
     let rowData = {};
     for (let j = 0; j < headers.length; j++) {
@@ -173,13 +173,13 @@ function databaseDelete(spreadsheetId, sheetName, filterConditions) {
 
   try {
     // 削除対象データの格納変数を初期化
-    var rowsToDelete = [];
+    let rowsToDelete = [];
     // 削除対象データの抽出
     values.forEach(function(row, index) {
-      var meetsConditions = filterConditions.every(function(condition) {
-        var key = condition.key;
-        var value = condition.value;
-        var columnIndex = headers.indexOf(key);
+      let meetsConditions = filterConditions.every(function(condition) {
+        let key = condition.key;
+        let value = condition.value;
+        let columnIndex = headers.indexOf(key);
         return columnIndex !== -1 && row[columnIndex] === value;
       });
 
