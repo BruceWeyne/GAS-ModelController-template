@@ -43,7 +43,7 @@ function databaseGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow) 
   }
 
   // オフセットと最大取得数の検証
-  if (offsetRow + 1 >= filteredValues.length) return data; // オフセットがデータ数以上の場合は空で返却
+  if (offsetRow >= filteredValues.length) return data; // オフセットがデータ数以上の場合は空で返却
   offsetRow = !offsetRow || offsetRow < 1 ? offsetRow = 1 : offsetRow; // オフセットが未設定または１以下の場合は１に置き換え（カラムは取得しない）
   limitRow = !limitRow || offsetRow + limitRow >= filteredValues.length ? limitRow = filteredValues.length : offsetRow + limitRow; // 取得個数が未設定またはデータ数以上の場合はデータ数に置き換え
 
