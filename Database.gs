@@ -1,5 +1,5 @@
 /**
- * スプレッドシートからのデータ取得
+ * スプレッドシートからのデータ取得（AND）
  * @param {String} spreadsheetId
  * @param {String} sheetName
  * @param {Object List} conditions
@@ -36,6 +36,80 @@ function databaseGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow) 
         return row[columnIndex] === value;
       });
     });
+    // ヘッダー行を追加
+    filteredValues.unshift(headers);
+  } else { // 条件の指定がなければそのまま
+    filteredValues = values;
+  }
+
+  // オフセットと最大取得数の検証
+  offsetRow = !offsetRow || offsetRow < 1 ? offsetRow = 1 : offsetRow; // オフセットが未設定または１以下の場合は１に置き換え（カラムは取得しない）
+  limitRow = !limitRow || offsetRow + limitRow >= filteredValues.length ? limitRow = filteredValues.length : offsetRow + limitRow; // 取得個数が未設定またはデータ数以上の場合はデータ数に置き換え
+
+  // オフセットがデータ数以上の場合は空で返却
+  if (offsetRow >= filteredValues.length) return data;
+
+  // データの連想配列化
+  for (let i = offsetRow; i < limitRow; i++) {
+    let row = filteredValues[i];
+    let rowData = {};
+    for (let j = 0; j < headers.length; j++) {
+      rowData[headers[j]] = row[j];
+    }
+    data.push(rowData);
+  }
+  return data;
+}
+
+/**
+ * スプレッドシートからのデータ取得（OR）
+ * @param {String} spreadsheetId
+ * @param {String} sheetName
+ * @param {Object List} conditions
+ * @param {Integer} offsetRow
+ * @param {Integer} limitRow
+ * @return {Object List} data
+ * [Ref.]
+ * const conditions = [
+ *        { key: 'Name', value: 'John' }, // 名前が 'John' の行を取得
+ *        { key: 'Age', value: 25 }, // 年齢が 25 の行を取得
+ *        // 他の条件を追加
+ * ];
+ * 
+ */
+function databaseOrGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow) {
+  const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+  const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+  const dataRange = sheet.getDataRange(); // データの範囲を取得
+  const values = dataRange.getValues(); // データを2D配列として取得
+  const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+
+  // 返却データの初期化
+  let data = [];
+
+  // データを条件でフィルタリング
+  let filteredValues = [];
+  if (conditions && conditions.length > 0) {
+    // 値のフィルタリング
+    for (var i = 1; i < values.length; i++) {
+      var row = values[i];
+      var meetsCriteria = false;
+      // 条件に基づいて行をフィルタリング
+      for (var j = 0; j < conditions.length; j++) {
+        var key = conditions[j].key;
+        var value = conditions[j].value;
+        var columnIndex = headers.indexOf(key) + 1;
+
+        if (columnIndex > 0 && row[columnIndex - 1] === value) {
+          meetsCriteria = true;
+          break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+        }
+      }
+      // 条件に合致したデータ行を追加
+      if (meetsCriteria) {
+        filteredValues.push(row);
+      }
+    }
     // ヘッダー行を追加
     filteredValues.unshift(headers);
   } else { // 条件の指定がなければそのまま

@@ -1,10 +1,21 @@
 /**
- * データ取得
+ * データ取得（AND）
  */
 function modelGetData(sheetName, conditions, offsetRow, limitRow) {
   const conf = config();
   const spreadsheetId = conf.spreadsheetId; // スプレッドシートのIDを指定
   const dataList = databaseGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow); // データの取得
+  
+  return dataList;
+}
+
+/**
+ * データ取得（OR）
+ */
+function modelOrGetData(sheetName, conditions, offsetRow, limitRow) {
+  const conf = config();
+  const spreadsheetId = conf.spreadsheetId; // スプレッドシートのIDを指定
+  const dataList = databaseOrGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow); // データの取得
   
   return dataList;
 }
