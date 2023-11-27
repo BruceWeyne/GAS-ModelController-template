@@ -41,3 +41,14 @@ function modelDeleteData(sheetName, conditions) {
   
   return result;
 }
+
+/**
+ * データの全削除（ヘッダーは除く）
+ */
+function modelTruncateData(sheetName) {
+  const conf = config();
+  const spreadsheetId = conf.spreadsheetId; // スプレッドシートのIDを指定
+  const result = databaseTruncate(spreadsheetId, sheetName); // データの全削除
+  
+  return result;
+}

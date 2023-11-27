@@ -26,7 +26,7 @@ function databaseGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow) 
 
   // データを条件でフィルタリング
   let filteredValues = [];
-  if (conditions) {
+  if (conditions && conditions.length > 0) {
     // 値のフィルタリング
     filteredValues = values.filter(function(row) {
       return conditions.every(function(condition) {
@@ -193,6 +193,27 @@ function databaseDelete(spreadsheetId, sheetName, filterConditions) {
     rowsToDelete.reverse().forEach(function(rowIndex) {
       sheet.deleteRow(rowIndex);
     });
+    return {'result': true, 'error': ''};
+
+  } catch (error) {
+    return {'result': false, 'error': error};
+  }
+}
+
+/**
+ * スプレッドシートのデータを全削除（ヘッダーは除く）
+ * @param {String} spreadsheetId
+ * @param {String} sheetName
+ * @return {Object} 
+ */
+function databaseTruncate(spreadsheetId, sheetName) {
+  const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+  const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+  const dataRange = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()); // 2行目以降のデータ範囲を取得（ヘッダーを除外）
+
+  try {
+    // 削除の実行
+    dataRange.clearContent();
     return {'result': true, 'error': ''};
 
   } catch (error) {
