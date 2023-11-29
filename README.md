@@ -1,5 +1,9 @@
 # Model & Controller Template for Google Apps Script
 - Using spreadsheet as a database
+- Set a spreadsheet ID to the Config.gs file
+
+## Spreadsheet Sample
+![Sample](img-sample-spreadsheet.png)
 
 ## Get Data from Spreadsheet
 
