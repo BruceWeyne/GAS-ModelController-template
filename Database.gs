@@ -144,8 +144,8 @@ function databaseOrGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow
  * @return {Object} 
  * [Ref.]
  * const keyValuePairs = [
- *        { key: 'Name', value: 'John' },
- *        { key: 'Age', value: 25 },
+ *        { 'Name': 'John', 'Age': '25 },
+ *        { 'Name': 'Mike', 'Age': '31 },
  *        // 他のデータを追加
  * ];
  */
@@ -182,7 +182,7 @@ function databaseInsert(spreadsheetId, sheetName, keyValuePairs) {
  * @param {Object List} filterConditions
  * @return {Object} 
  * [Ref.]
- * const keyValuePair = { key: 'Name', value: 'John' };
+ * const keyValuePair = { 'Name': 'Mike', 'Age': 31 };
  * const filterConditions = [
  *        { key: 'Name', value: 'John' },
  *        { key: 'Age', value: 25 },
