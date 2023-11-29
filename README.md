@@ -3,7 +3,7 @@
 
 ## Get Data from Spreadsheet
 
-```Javascript
+```javascript
 const mdl = new Model();
 
 const conditions = [
@@ -24,4 +24,34 @@ Logger.log(allData);
 Logger.log(dataWithAnd);
 Logger.log(dataWithOr);
 Logger.log(dataOffsetLimit);
+```
+
+### Use other spreadsheets
+
+```javascript
+const mdl = new Model("9Lnk1lZhQ9Hr8IMt60FIbDwLSlv5jlu9");
+```
+
+### Insert Data into Spreadsheet
+
+```javascript
+const mdl = new Model();
+
+const keyValuePairs = [
+  {
+    "columnName1": "value1-1",
+    "columnName2": "value2-1",
+    // etc.
+  },
+  {
+    "columnName1": "value1-2",
+    "columnName2": "value2-2",
+    // etc.
+  },
+  // etc.
+];
+
+const result = mdl.inserData("sheetName", keyValuePairs);
+
+Logger.log(result);
 ```
