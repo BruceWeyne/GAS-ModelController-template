@@ -59,3 +59,27 @@ const result = mdl.inserData("SheetName", keyValuePairs);
 
 Logger.log(result);
 ```
+
+## Update Data of Spreadsheet
+
+```javascript
+const mdl = new Model();
+
+const conditions = [
+  { key: "ColumnName1", value: "value1" },
+  { key: "ColumnName2", value: "value2" },
+  // etc.
+];
+
+const keyValuePair = {
+  "ColumnName1": "new value 1",
+  "ColumnName2": "new value 2",
+  // etc.
+};
+
+const resultOfUpdate = mdl.updateData("SheetName", keyValuePair, conditions);
+const resultOfOrUpdate = mdl.orUpdateData("SheetName", keyValuePair, conditions);
+
+Logger.log(resultOfUpdate);
+Logger.log(resultOfOrUpdate);
+```
