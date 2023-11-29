@@ -110,5 +110,5 @@ const mdl = new Model();
 
 const result = mdl.truncateData("SheetName");
 
-Logger.log(resultOfDelete);
+Logger.log(result);
 ```
