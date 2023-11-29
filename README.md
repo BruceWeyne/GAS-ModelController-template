@@ -3,7 +3,7 @@
 
 ## Get Data from Spreadsheet
 
-```
+```Javascript
 const mdl = new Model();
 
 const condtions = [
