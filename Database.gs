@@ -148,7 +148,6 @@ function databaseInsert(spreadsheetId, sheetName, keyValuePairs) {
   }
 }
 
-
 /**
  * スプレッドシートのデータを更新（AND）
  * @param {String} spreadsheetId
@@ -174,6 +173,53 @@ function databaseUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions
   try {
     // 対象データを抽出
     const filteredValues = filterValuesWithAnd(values, filterConditions);
+    // 対象データを更新
+    for (let i = 0; i < filteredValues.length; i++) {
+      let row = filteredValues[i];
+      let keyIndex = headers.indexOf('key'); // キーの列を特定する
+      if (row[keyIndex] === keyValuePair['key']) {
+        for (let updateKey in keyValuePair) {
+          let updateValue = keyValuePair[updateKey];
+          let updateIndex = headers.indexOf(updateKey);
+          if (updateIndex !== -1) {
+            sheet.getRange(values.indexOf(row) + 1, updateIndex + 1).setValue(updateValue);
+          }
+        }
+      }
+    }
+    return {'result': true, 'error': ''};
+
+  } catch (error) {
+    return {'result': false, 'error': error};
+  }
+}
+
+/**
+ * スプレッドシートのデータを更新（OR）
+ * 一括で複数の行データを更新する
+ * @param {String} spreadsheetId
+ * @param {String} sheetName
+ * @param {Object} keyValuePair
+ * @param {Object List} filterConditions
+ * @return {Object} 
+ * [Ref.]
+ * const keyValuePair = { 'Name': 'Mike', 'Age': 31 };
+ * const filterConditions = [
+ *        { key: 'Name', value: 'John' },
+ *        { key: 'Age', value: 25 },
+ *        // 他のデータを追加
+ * ];
+ */
+function databaseMultiUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions) {
+  const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+  const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+  const dataRange = sheet.getDataRange(); // データの範囲を取得
+  const values = dataRange.getValues(); // データを2D配列として取得
+  const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+
+  try {
+    // 対象データを抽出
+    const filteredValues = filterValuesWithOr(values, filterConditions);
     // 対象データを更新
     for (let i = 0; i < filteredValues.length; i++) {
       let row = filteredValues[i];
@@ -243,6 +289,61 @@ function databaseDelete(spreadsheetId, sheetName, filterConditions) {
 }
 
 /**
+ * スプレッドシートのデータを削除（OR）
+ * 一括で複数の行データを削除する
+ * @param {String} spreadsheetId
+ * @param {String} sheetName
+ * @param {Object List} filterConditions
+ * @return {Object} 
+ * [Ref.]
+ * const filterConditions = [
+ *        { key: 'Name', value: 'John' },
+ *        { key: 'Age', value: 25 },
+ *        // 他のデータを追加
+ * ];
+ */
+function databaseMultiDelete(spreadsheetId, sheetName, filterConditions) {
+  const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+  const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+  const dataRange = sheet.getDataRange(); // データの範囲を取得
+  const values = dataRange.getValues(); // データを2D配列として取得
+  const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+
+  try {
+    // 削除対象データの格納変数を初期化
+    let rowsToDelete = [];
+    // 削除対象データの抽出
+    for (let i = 1; i < values.length; i++) { // i = 1 : ヘッダーは除く
+      let row = values[i];
+      let meetsCriteria = false;
+      // 条件に基づいて行をフィルタリング
+      for (let j = 0; j < filterConditions.length; j++) {
+        let key = filterConditions[j].key;
+        let value = filterConditions[j].value;
+        let columnIndex = headers.indexOf(key) + 1;
+        // 各列の値の検証
+        if (columnIndex > 0 && row[columnIndex - 1] === value) {
+          meetsCriteria = true;
+          break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+        }
+      }
+      // 条件に合致した場合はその行番号を抽出
+      if (meetsCriteria) {
+        rowsToDelete.push(i + 1); // 行番号を保存
+      }
+    }
+    // 削除の実行
+    rowsToDelete.reverse().forEach(function(rowIndex) {
+      sheet.deleteRow(rowIndex);
+    });
+    return {'result': true, 'error': ''};
+
+  } catch (error) {
+    return {'result': false, 'error': error};
+  }
+}
+
+/**
  * スプレッドシートのデータを全削除（ヘッダーは除く）
  * @param {String} spreadsheetId
  * @param {String} sheetName
@@ -289,14 +390,14 @@ function filterValuesWithAnd(values, filterConditions) {
 function filterValuesWithOr(values, filterConditions) {
   const headers = values[0];
   const filteredValues = [];
-  for (var i = 1; i < values.length; i++) {
-    var row = values[i];
-    var meetsCriteria = false;
+  for (let i = 1; i < values.length; i++) { // i = 1 : ヘッダーは除く
+    let row = values[i];
+    let meetsCriteria = false;
     // 条件に基づいて行をフィルタリング
-    for (var j = 0; j < filterConditions.length; j++) {
-      var key = filterConditions[j].key;
-      var value = filterConditions[j].value;
-      var columnIndex = headers.indexOf(key) + 1;
+    for (let j = 0; j < filterConditions.length; j++) {
+      let key = filterConditions[j].key;
+      let value = filterConditions[j].value;
+      let columnIndex = headers.indexOf(key) + 1;
       // 各列の値の検証
       if (columnIndex > 0 && row[columnIndex - 1] === value) {
         meetsCriteria = true;
