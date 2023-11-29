@@ -28,14 +28,7 @@ function databaseGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow) 
   let filteredValues = [];
   if (conditions && conditions.length > 0) {
     // 値のフィルタリング
-    filteredValues = values.filter(function(row) {
-      return conditions.every(function(condition) {
-        let key = condition.key;
-        let value = condition.value;
-        let columnIndex = headers.indexOf(key);
-        return row[columnIndex] === value;
-      });
-    });
+    filteredValues = filterValuesWithAnd(values, conditions);
     // ヘッダー行を追加
     filteredValues.unshift(headers);
   } else { // 条件の指定がなければそのまま
@@ -91,25 +84,7 @@ function databaseOrGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow
   let filteredValues = [];
   if (conditions && conditions.length > 0) {
     // 値のフィルタリング
-    for (var i = 1; i < values.length; i++) {
-      var row = values[i];
-      var meetsCriteria = false;
-      // 条件に基づいて行をフィルタリング
-      for (var j = 0; j < conditions.length; j++) {
-        var key = conditions[j].key;
-        var value = conditions[j].value;
-        var columnIndex = headers.indexOf(key) + 1;
-
-        if (columnIndex > 0 && row[columnIndex - 1] === value) {
-          meetsCriteria = true;
-          break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
-        }
-      }
-      // 条件に合致したデータ行を追加
-      if (meetsCriteria) {
-        filteredValues.push(row);
-      }
-    }
+    filteredValues = filterValuesWithOr(values, conditions);
     // ヘッダー行を追加
     filteredValues.unshift(headers);
   } else { // 条件の指定がなければそのまま
@@ -175,7 +150,7 @@ function databaseInsert(spreadsheetId, sheetName, keyValuePairs) {
 
 
 /**
- * スプレッドシートのデータを更新
+ * スプレッドシートのデータを更新（AND）
  * @param {String} spreadsheetId
  * @param {String} sheetName
  * @param {Object} keyValuePair
@@ -198,18 +173,11 @@ function databaseUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions
 
   try {
     // 対象データを抽出
-    const filteredRows = values.filter(function(row) {
-      return filterConditions.every(function(condition) {
-        let key = condition.key;
-        let value = condition.value;
-        let columnIndex = headers.indexOf(key);
-        return columnIndex !== -1 && row[columnIndex] === value;
-      });
-    });
+    const filteredValues = filterValuesWithAnd(values, filterConditions);
     // 対象データを更新
-    for (let i = 0; i < filteredRows.length; i++) {
-      let row = filteredRows[i];
-      let keyIndex = headers.indexOf('key'); // キーの列を特定するための例
+    for (let i = 0; i < filteredValues.length; i++) {
+      let row = filteredValues[i];
+      let keyIndex = headers.indexOf('key'); // キーの列を特定する
       if (row[keyIndex] === keyValuePair['key']) {
         for (let updateKey in keyValuePair) {
           let updateValue = keyValuePair[updateKey];
@@ -228,7 +196,7 @@ function databaseUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions
 }
 
 /**
- * スプレッドシートのデータを削除
+ * スプレッドシートのデータを削除（AND）
  * @param {String} spreadsheetId
  * @param {String} sheetName
  * @param {Object List} filterConditions
@@ -258,7 +226,7 @@ function databaseDelete(spreadsheetId, sheetName, filterConditions) {
         let columnIndex = headers.indexOf(key);
         return columnIndex !== -1 && row[columnIndex] === value;
       });
-
+      // 条件に合致した場合はその行番号を抽出
       if (meetsConditions) {
         rowsToDelete.push(index + 1); // 行番号を保存
       }
@@ -293,4 +261,52 @@ function databaseTruncate(spreadsheetId, sheetName) {
   } catch (error) {
     return {'result': false, 'error': error};
   }
+}
+
+/**
+ * AND フィルター
+ * @param {List List} values : range.getValues()
+ * @param {Object List} filterConditions
+ */
+function filterValuesWithAnd(values, filterConditions) {
+  const headers = values[0];
+  const filteredValues = values.filter(function(row) {
+    return filterConditions.every(function(condition) {
+      let key = condition.key;
+      let value = condition.value;
+      let columnIndex = headers.indexOf(key);
+      return row[columnIndex] === value;
+    });
+  });
+  return filteredValues;
+}
+
+/**
+ * OR フィルター
+ * @param {List List} values : range.getValues()
+ * @param {Object List} filterConditions
+ */
+function filterValuesWithOr(values, filterConditions) {
+  const headers = values[0];
+  const filteredValues = [];
+  for (var i = 1; i < values.length; i++) {
+    var row = values[i];
+    var meetsCriteria = false;
+    // 条件に基づいて行をフィルタリング
+    for (var j = 0; j < filterConditions.length; j++) {
+      var key = filterConditions[j].key;
+      var value = filterConditions[j].value;
+      var columnIndex = headers.indexOf(key) + 1;
+      // 各列の値の検証
+      if (columnIndex > 0 && row[columnIndex - 1] === value) {
+        meetsCriteria = true;
+        break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+      }
+    }
+    // 条件に合致したデータ行を追加
+    if (meetsCriteria) {
+      filteredValues.push(row);
+    }
+  }
+  return filteredValues;
 }
