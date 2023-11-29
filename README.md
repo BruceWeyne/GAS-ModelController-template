@@ -19,9 +19,9 @@ const conditions = [
 const offset = 10;
 const limit = 5;
 
-const allData = mdl.getData("SheetName");
-const dataWithAnd = mdl.getData("SheetName", conditions);
-const dataWithOr = mdl.orGetData("SheetName", conditions);
+const allData         = mdl.getData("SheetName");
+const dataWithAnd     = mdl.getData("SheetName", conditions);
+const dataWithOr      = mdl.orGetData("SheetName", conditions);
 const dataOffsetLimit = mdl.getData("SheetName", null, offset, limit);
 
 Logger.log(allData);
@@ -77,7 +77,7 @@ const keyValuePair = {
   // etc.
 };
 
-const resultOfUpdate = mdl.updateData("SheetName", keyValuePair, conditions);
+const resultOfUpdate   = mdl.updateData("SheetName", keyValuePair, conditions);
 const resultOfOrUpdate = mdl.orUpdateData("SheetName", keyValuePair, conditions);
 
 Logger.log(resultOfUpdate);
@@ -95,7 +95,7 @@ const conditions = [
   // etc.
 ];
 
-const resultOfDelete = mdl.deleteData("SheetName", conditions);
+const resultOfDelete   = mdl.deleteData("SheetName", conditions);
 const resultOfOrDelete = mdl.orDeleteData("SheetName", conditions);
 
 Logger.log(resultOfDelete);
