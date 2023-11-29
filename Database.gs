@@ -36,7 +36,7 @@ class Database {
       let filteredValues = [];
       if (conditions && conditions.length > 0) {
         // 値のフィルタリング
-        filteredValues = filterValuesWithAnd(values, conditions);
+        filteredValues = this.filterValuesWithAnd(values, conditions);
         // ヘッダー行を追加
         filteredValues.unshift(headers);
       } else { // 条件の指定がなければそのまま
@@ -98,7 +98,7 @@ class Database {
       let filteredValues = [];
       if (conditions && conditions.length > 0) {
         // 値のフィルタリング
-        filteredValues = filterValuesWithOr(values, conditions);
+        filteredValues = this.filterValuesWithOr(values, conditions);
         // ヘッダー行を追加
         filteredValues.unshift(headers);
       } else { // 条件の指定がなければそのまま
@@ -190,7 +190,7 @@ class Database {
       const values = dataRange.getValues(); // データを2D配列として取得
       const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
       // 対象データを抽出
-      const filteredValues = filterValuesWithAnd(values, filterConditions);
+      const filteredValues = this.filterValuesWithAnd(values, filterConditions);
       // 対象データを更新
       for (let i = 0; i < filteredValues.length; i++) {
         let row = filteredValues[i];
@@ -237,7 +237,7 @@ class Database {
       const values = dataRange.getValues(); // データを2D配列として取得
       const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
       // 対象データを抽出
-      const filteredValues = filterValuesWithOr(values, filterConditions);
+      const filteredValues = this.filterValuesWithOr(values, filterConditions);
       // 対象データを更新
       for (let i = 0; i < filteredValues.length; i++) {
         let row = filteredValues[i];
