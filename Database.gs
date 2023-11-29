@@ -210,7 +210,7 @@ function databaseUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions
  *        // 他のデータを追加
  * ];
  */
-function databaseMultiUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions) {
+function databaseOrUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions) {
   const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
   const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
   const dataRange = sheet.getDataRange(); // データの範囲を取得
@@ -302,7 +302,7 @@ function databaseDelete(spreadsheetId, sheetName, filterConditions) {
  *        // 他のデータを追加
  * ];
  */
-function databaseMultiDelete(spreadsheetId, sheetName, filterConditions) {
+function databaseOrDelete(spreadsheetId, sheetName, filterConditions) {
   const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
   const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
   const dataRange = sheet.getDataRange(); // データの範囲を取得

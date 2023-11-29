@@ -45,10 +45,10 @@ function modelUpdateData(sheetName, keyValuePairs, conditions) {
 /**
  * データ更新（OR）
  */
-function modelMultiUpdateData(sheetName, keyValuePairs, conditions) {
+function modelOrUpdateData(sheetName, keyValuePairs, conditions) {
   const conf = config();
   const spreadsheetId = conf.spreadsheetId; // スプレッドシートのIDを指定
-  const result = databaseMultiUpdate(spreadsheetId, sheetName, keyValuePairs, conditions); // データの更新
+  const result = databaseOrUpdate(spreadsheetId, sheetName, keyValuePairs, conditions); // データの更新
   
   return result;
 }
@@ -67,10 +67,10 @@ function modelDeleteData(sheetName, conditions) {
 /**
  * データの削除（OR）
  */
-function modelMultiDeleteData(sheetName, conditions) {
+function modelOrDeleteData(sheetName, conditions) {
   const conf = config();
   const spreadsheetId = conf.spreadsheetId; // スプレッドシートのIDを指定
-  const result = databaseMultiDelete(spreadsheetId, sheetName, conditions); // データの削除
+  const result = databaseOrDelete(spreadsheetId, sheetName, conditions); // データの削除
   
   return result;
 }
