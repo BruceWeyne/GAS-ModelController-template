@@ -159,10 +159,10 @@ class Database {
         // データの挿入
         sheet.appendRow(newRow);
       }
-      return {'result': true, 'error': ''};
+      return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'result': false, 'error': error};
+      return {'success': false, 'error': error};
     }
   }
 
@@ -205,10 +205,10 @@ class Database {
           }
         }
       }
-      return {'result': true, 'error': ''};
+      return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'result': false, 'error': error};
+      return {'success': false, 'error': error};
     }
   }
 
@@ -252,10 +252,10 @@ class Database {
           }
         }
       }
-      return {'result': true, 'error': ''};
+      return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'result': false, 'error': error};
+      return {'success': false, 'error': error};
     }
   }
 
@@ -299,10 +299,10 @@ class Database {
       rowsToDelete.reverse().forEach(function(rowIndex) {
         sheet.deleteRow(rowIndex);
       });
-      return {'result': true, 'error': ''};
+      return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'result': false, 'error': error};
+      return {'success': false, 'error': error};
     }
   }
 
@@ -354,10 +354,10 @@ class Database {
       rowsToDelete.reverse().forEach(function(rowIndex) {
         sheet.deleteRow(rowIndex);
       });
-      return {'result': true, 'error': ''};
+      return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'result': false, 'error': error};
+      return {'success': false, 'error': error};
     }
   }
 
@@ -375,10 +375,10 @@ class Database {
       const dataRange = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()); // 2行目以降のデータ範囲を取得（ヘッダーを除外）
       // 削除の実行
       dataRange.clearContent();
-      return {'result': true, 'error': ''};
+      return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'result': false, 'error': error};
+      return {'success': false, 'error': error};
     }
   }
 
