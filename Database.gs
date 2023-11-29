@@ -1,5 +1,9 @@
 class Database {
 
+  constructor() {
+    this.sheetNameError = "Sheet name not found";
+  }
+
   /**
    * スプレッドシートからのデータ取得（AND）
    * @param {String} spreadsheetId
@@ -17,43 +21,49 @@ class Database {
    * 
    */
   databaseGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow) {
-    const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
-    const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-    const dataRange = sheet.getDataRange(); // データの範囲を取得
-    const values = dataRange.getValues(); // データを2D配列として取得
-    const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+    try {
+      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      const dataRange = sheet.getDataRange(); // データの範囲を取得
+      const values = dataRange.getValues(); // データを2D配列として取得
+      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
 
-    // 返却データの初期化
-    let data = [];
+      // 返却データの初期化
+      let data = [];
 
-    // データを条件でフィルタリング
-    let filteredValues = [];
-    if (conditions && conditions.length > 0) {
-      // 値のフィルタリング
-      filteredValues = filterValuesWithAnd(values, conditions);
-      // ヘッダー行を追加
-      filteredValues.unshift(headers);
-    } else { // 条件の指定がなければそのまま
-      filteredValues = values;
-    }
-
-    // オフセットと最大取得数の検証
-    offsetRow = !offsetRow || offsetRow < 1 ? offsetRow = 1 : offsetRow; // オフセットが未設定または１以下の場合は１に置き換え（カラムは取得しない）
-    limitRow = !limitRow || offsetRow + limitRow >= filteredValues.length ? limitRow = filteredValues.length : offsetRow + limitRow; // 取得個数が未設定またはデータ数以上の場合はデータ数に置き換え
-
-    // オフセットがデータ数以上の場合は空で返却
-    if (offsetRow >= filteredValues.length) return data;
-
-    // データの連想配列化
-    for (let i = offsetRow; i < limitRow; i++) {
-      let row = filteredValues[i];
-      let rowData = {};
-      for (let j = 0; j < headers.length; j++) {
-        rowData[headers[j]] = row[j];
+      // データを条件でフィルタリング
+      let filteredValues = [];
+      if (conditions && conditions.length > 0) {
+        // 値のフィルタリング
+        filteredValues = filterValuesWithAnd(values, conditions);
+        // ヘッダー行を追加
+        filteredValues.unshift(headers);
+      } else { // 条件の指定がなければそのまま
+        filteredValues = values;
       }
-      data.push(rowData);
+
+      // オフセットと最大取得数の検証
+      offsetRow = !offsetRow || offsetRow < 1 ? offsetRow = 1 : offsetRow; // オフセットが未設定または１以下の場合は１に置き換え（カラムは取得しない）
+      limitRow = !limitRow || offsetRow + limitRow >= filteredValues.length ? limitRow = filteredValues.length : offsetRow + limitRow; // 取得個数が未設定またはデータ数以上の場合はデータ数に置き換え
+
+      // オフセットがデータ数以上の場合は空で返却
+      if (offsetRow >= filteredValues.length) return data;
+
+      // データの連想配列化
+      for (let i = offsetRow; i < limitRow; i++) {
+        let row = filteredValues[i];
+        let rowData = {};
+        for (let j = 0; j < headers.length; j++) {
+          rowData[headers[j]] = row[j];
+        }
+        data.push(rowData);
+      }
+      return data; 
+
+    } catch (error) {
+      return error;
     }
-    return data;
   }
 
   /**
@@ -73,43 +83,49 @@ class Database {
    * 
    */
   databaseOrGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow) {
-    const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
-    const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-    const dataRange = sheet.getDataRange(); // データの範囲を取得
-    const values = dataRange.getValues(); // データを2D配列として取得
-    const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+    try {
+      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      const dataRange = sheet.getDataRange(); // データの範囲を取得
+      const values = dataRange.getValues(); // データを2D配列として取得
+      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
 
-    // 返却データの初期化
-    let data = [];
+      // 返却データの初期化
+      let data = [];
 
-    // データを条件でフィルタリング
-    let filteredValues = [];
-    if (conditions && conditions.length > 0) {
-      // 値のフィルタリング
-      filteredValues = filterValuesWithOr(values, conditions);
-      // ヘッダー行を追加
-      filteredValues.unshift(headers);
-    } else { // 条件の指定がなければそのまま
-      filteredValues = values;
-    }
-
-    // オフセットと最大取得数の検証
-    offsetRow = !offsetRow || offsetRow < 1 ? offsetRow = 1 : offsetRow; // オフセットが未設定または１以下の場合は１に置き換え（カラムは取得しない）
-    limitRow = !limitRow || offsetRow + limitRow >= filteredValues.length ? limitRow = filteredValues.length : offsetRow + limitRow; // 取得個数が未設定またはデータ数以上の場合はデータ数に置き換え
-
-    // オフセットがデータ数以上の場合は空で返却
-    if (offsetRow >= filteredValues.length) return data;
-
-    // データの連想配列化
-    for (let i = offsetRow; i < limitRow; i++) {
-      let row = filteredValues[i];
-      let rowData = {};
-      for (let j = 0; j < headers.length; j++) {
-        rowData[headers[j]] = row[j];
+      // データを条件でフィルタリング
+      let filteredValues = [];
+      if (conditions && conditions.length > 0) {
+        // 値のフィルタリング
+        filteredValues = filterValuesWithOr(values, conditions);
+        // ヘッダー行を追加
+        filteredValues.unshift(headers);
+      } else { // 条件の指定がなければそのまま
+        filteredValues = values;
       }
-      data.push(rowData);
+
+      // オフセットと最大取得数の検証
+      offsetRow = !offsetRow || offsetRow < 1 ? offsetRow = 1 : offsetRow; // オフセットが未設定または１以下の場合は１に置き換え（カラムは取得しない）
+      limitRow = !limitRow || offsetRow + limitRow >= filteredValues.length ? limitRow = filteredValues.length : offsetRow + limitRow; // 取得個数が未設定またはデータ数以上の場合はデータ数に置き換え
+
+      // オフセットがデータ数以上の場合は空で返却
+      if (offsetRow >= filteredValues.length) return data;
+
+      // データの連想配列化
+      for (let i = offsetRow; i < limitRow; i++) {
+        let row = filteredValues[i];
+        let rowData = {};
+        for (let j = 0; j < headers.length; j++) {
+          rowData[headers[j]] = row[j];
+        }
+        data.push(rowData);
+      }
+      return data;
+
+    } catch (error) {
+      return error;
     }
-    return data;
   }
 
 
@@ -127,14 +143,14 @@ class Database {
    * ];
    */
   databaseInsert(spreadsheetId, sheetName, keyValuePairs) {
-    const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
-    const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-    const dataRange = sheet.getDataRange(); // データの範囲を取得
-    const values = dataRange.getValues(); // データを2D配列として取得
-    const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
-
-    // データをスプレッドシートへ挿入
     try {
+      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      const dataRange = sheet.getDataRange(); // データの範囲を取得
+      const values = dataRange.getValues(); // データを2D配列として取得
+      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+      // データをスプレッドシートへ挿入
       for (let i = 0; i < keyValuePairs.length; i++) {
         // データのマッピング
         let newRow = headers.map(function(header) {
@@ -166,13 +182,13 @@ class Database {
    * ];
    */
   databaseUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions) {
-    const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
-    const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-    const dataRange = sheet.getDataRange(); // データの範囲を取得
-    const values = dataRange.getValues(); // データを2D配列として取得
-    const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
-
     try {
+      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      const dataRange = sheet.getDataRange(); // データの範囲を取得
+      const values = dataRange.getValues(); // データを2D配列として取得
+      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
       // 対象データを抽出
       const filteredValues = filterValuesWithAnd(values, filterConditions);
       // 対象データを更新
@@ -213,13 +229,13 @@ class Database {
    * ];
    */
   databaseOrUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions) {
-    const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
-    const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-    const dataRange = sheet.getDataRange(); // データの範囲を取得
-    const values = dataRange.getValues(); // データを2D配列として取得
-    const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
-
     try {
+      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      const dataRange = sheet.getDataRange(); // データの範囲を取得
+      const values = dataRange.getValues(); // データを2D配列として取得
+      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
       // 対象データを抽出
       const filteredValues = filterValuesWithOr(values, filterConditions);
       // 対象データを更新
@@ -257,13 +273,13 @@ class Database {
    * ];
    */
   databaseDelete(spreadsheetId, sheetName, filterConditions) {
-    const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
-    const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-    const dataRange = sheet.getDataRange(); // データの範囲を取得
-    const values = dataRange.getValues(); // データを2D配列として取得
-    const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
-
     try {
+      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      const dataRange = sheet.getDataRange(); // データの範囲を取得
+      const values = dataRange.getValues(); // データを2D配列として取得
+      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
       // 削除対象データの格納変数を初期化
       let rowsToDelete = [];
       // 削除対象データの抽出
@@ -305,13 +321,13 @@ class Database {
    * ];
    */
   databaseOrDelete(spreadsheetId, sheetName, filterConditions) {
-    const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
-    const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-    const dataRange = sheet.getDataRange(); // データの範囲を取得
-    const values = dataRange.getValues(); // データを2D配列として取得
-    const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
-
     try {
+      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      const dataRange = sheet.getDataRange(); // データの範囲を取得
+      const values = dataRange.getValues(); // データを2D配列として取得
+      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
       // 削除対象データの格納変数を初期化
       let rowsToDelete = [];
       // 削除対象データの抽出
@@ -352,11 +368,11 @@ class Database {
    * @return {Object} 
    */
   databaseTruncate(spreadsheetId, sheetName) {
-    const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
-    const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-    const dataRange = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()); // 2行目以降のデータ範囲を取得（ヘッダーを除外）
-
     try {
+      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      const dataRange = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()); // 2行目以降のデータ範囲を取得（ヘッダーを除外）
       // 削除の実行
       dataRange.clearContent();
       return {'result': true, 'error': ''};
