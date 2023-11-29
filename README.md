@@ -83,3 +83,32 @@ const resultOfOrUpdate = mdl.orUpdateData("SheetName", keyValuePair, conditions)
 Logger.log(resultOfUpdate);
 Logger.log(resultOfOrUpdate);
 ```
+
+## Delete Data of Spreadsheet
+
+```javascript
+const mdl = new Model();
+
+const conditions = [
+  { key: "ColumnName1", value: "value1" },
+  { key: "ColumnName2", value: "value2" },
+  // etc.
+];
+
+const resultOfDelete = mdl.deleteData("SheetName", conditions);
+const resultOfOrDelete = mdl.orDeleteData("SheetName", conditions);
+
+Logger.log(resultOfDelete);
+Logger.log(resultOfOrDelete);
+```
+
+## Truncate Data of Spreadsheet
+- Delete all rows of the selected sheet except headers
+
+```javascript
+const mdl = new Model();
+
+const result = mdl.truncateData("SheetName");
+
+Logger.log(resultOfDelete);
+```
