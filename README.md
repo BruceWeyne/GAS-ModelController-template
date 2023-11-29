@@ -11,18 +11,18 @@
 const mdl = new Model();
 
 const conditions = [
-  { key: "columnName1", value: "value1" },
-  { key: "columnName2", value: "value2" },
+  { key: "ColumnName1", value: "value1" },
+  { key: "ColumnName2", value: "value2" },
   // etc.
 ];
 
 const offset = 10;
 const limit = 5;
 
-const allData = mdl.getData("sheetName");
-const dataWithAnd = mdl.getData("sheetName", conditions);
-const dataWithOr = mdl.orGetData("sheetName", conditions);
-const dataOffsetLimit = mdl.getData("sheetName", null, offset, limit);
+const allData = mdl.getData("SheetName");
+const dataWithAnd = mdl.getData("SheetName", conditions);
+const dataWithOr = mdl.orGetData("SheetName", conditions);
+const dataOffsetLimit = mdl.getData("SheetName", null, offset, limit);
 
 Logger.log(allData);
 Logger.log(dataWithAnd);
@@ -43,19 +43,19 @@ const mdl = new Model();
 
 const keyValuePairs = [
   {
-    "columnName1": "value1-1",
-    "columnName2": "value2-1",
+    "ColumnName1": "value1-1",
+    "ColumnName2": "value2-1",
     // etc.
   },
   {
-    "columnName1": "value1-2",
-    "columnName2": "value2-2",
+    "ColumnName1": "value1-2",
+    "ColumnName2": "value2-2",
     // etc.
   },
   // etc.
 ];
 
-const result = mdl.inserData("sheetName", keyValuePairs);
+const result = mdl.inserData("SheetName", keyValuePairs);
 
 Logger.log(result);
 ```
