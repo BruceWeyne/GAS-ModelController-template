@@ -6,7 +6,7 @@
 ```Javascript
 const mdl = new Model();
 
-const condtions = [
+const conditions = [
   { key: "columnName1", value: "value1" },
   { key: "columnName2", value: "value2" },
   // etc.
