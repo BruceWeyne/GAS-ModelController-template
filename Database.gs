@@ -36,7 +36,7 @@ class Database {
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
-      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+      const headers = values[0].filter(Boolean); // ヘッダー行を取得（連想配列のキーとして使用）
 
       // 返却データの初期化
       let data = [];
@@ -98,7 +98,7 @@ class Database {
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
-      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+      const headers = values[0].filter(Boolean); // ヘッダー行を取得（連想配列のキーとして使用）
 
       // 返却データの初期化
       let data = [];
@@ -158,7 +158,7 @@ class Database {
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
-      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+      const headers = values[0].filter(Boolean); // ヘッダー行を取得（連想配列のキーとして使用）
       // データをスプレッドシートへ挿入
       for (let i = 0; i < keyValuePairs.length; i++) {
         // データのマッピング
@@ -197,7 +197,7 @@ class Database {
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
-      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+      const headers = values[0].filter(Boolean); // ヘッダー行を取得（連想配列のキーとして使用）
       // 対象データを抽出
       const filteredValues = this.filterValuesWithAnd(values, filterConditions);
       // 対象データを更新
@@ -244,7 +244,7 @@ class Database {
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
-      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+      const headers = values[0].filter(Boolean); // ヘッダー行を取得（連想配列のキーとして使用）
       // 対象データを抽出
       const filteredValues = this.filterValuesWithOr(values, filterConditions);
       // 対象データを更新
@@ -288,16 +288,47 @@ class Database {
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
-      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+      const headers = values[0].filter(Boolean); // ヘッダー行を取得（連想配列のキーとして使用）
       // 削除対象データの格納変数を初期化
       let rowsToDelete = [];
       // 削除対象データの抽出
-      values.forEach(function(row, index) {
-        let meetsConditions = filterConditions.every(function(condition) {
+      values.forEach((row, index) => {
+        let meetsConditions = filterConditions.every(condition => {
           let key = condition.key;
           let value = condition.value;
-          let columnIndex = headers.indexOf(key);
-          return columnIndex !== -1 && row[columnIndex] === value;
+          // key に比較演算子が含まれているかを検証し処理を分岐
+          if (key.endsWith(this.operators.graterThan)) {
+            key = this.removeStringFromEnd(key, this.operators.graterThan);
+            let columnIndex = headers.indexOf(key);
+            return columnIndex !== -1 && row[columnIndex] && row[columnIndex] > value;
+          } else if (key.endsWith(this.operators.graterThanEqual)) {
+            key = this.removeStringFromEnd(key, this.operators.graterThanEqual);
+            let columnIndex = headers.indexOf(key);
+            return columnIndex !== -1 && row[columnIndex] && row[columnIndex] >= value;
+          } else if (key.endsWith(this.operators.lessThan)) {
+            key = this.removeStringFromEnd(key, this.operators.lessThan);
+            let columnIndex = headers.indexOf(key);
+            return columnIndex !== -1 && row[columnIndex] && row[columnIndex] < value;
+          } else if (key.endsWith(this.operators.lessThanEqual)) {
+            key = this.removeStringFromEnd(key, this.operators.lessThanEqual);
+            let columnIndex = headers.indexOf(key);
+            return columnIndex !== -1 && row[columnIndex] && row[columnIndex] <= value;
+          } else if (key.endsWith(this.operators.notEqual)) {
+            key = this.removeStringFromEnd(key, this.operators.notEqual);
+            let columnIndex = headers.indexOf(key);
+            return columnIndex !== -1 && row[columnIndex] != value;
+          } else if (key.endsWith(this.operators.notEqualStrict)) {
+            key = this.removeStringFromEnd(key, this.operators.notEqualStrict);
+            let columnIndex = headers.indexOf(key);
+            return columnIndex !== -1 && row[columnIndex] !== value;
+          } else if (key.endsWith(this.operators.equal)) {
+            key = this.removeStringFromEnd(key, this.operators.equal);
+            let columnIndex = headers.indexOf(key);
+            return columnIndex !== -1 && row[columnIndex] == value;
+          } else {
+            let columnIndex = headers.indexOf(key);
+            return columnIndex !== -1 && row[columnIndex] === value;
+          }
         });
         // 条件に合致した場合はその行番号を抽出
         if (meetsConditions) {
@@ -336,7 +367,7 @@ class Database {
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
-      const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
+      const headers = values[0].filter(Boolean); // ヘッダー行を取得（連想配列のキーとして使用）
       // 削除対象データの格納変数を初期化
       let rowsToDelete = [];
       // 削除対象データの抽出
@@ -347,11 +378,70 @@ class Database {
         for (let j = 0; j < filterConditions.length; j++) {
           let key = filterConditions[j].key;
           let value = filterConditions[j].value;
-          let columnIndex = headers.indexOf(key) + 1;
-          // 各列の値の検証
-          if (columnIndex > 0 && row[columnIndex - 1] === value) {
-            meetsCriteria = true;
-            break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+          // key に比較演算子が含まれているかを検証し処理を分岐
+          if (key.endsWith(this.operators.graterThan)) {
+            key = this.removeStringFromEnd(key, this.operators.graterThan);
+            let columnIndex = headers.indexOf(key) + 1;
+            // 各列の値の検証
+            if (columnIndex > 0 && row[columnIndex - 1] && row[columnIndex - 1] > value) {
+              meetsCriteria = true;
+              break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+            }
+          } else if (key.endsWith(this.operators.graterThanEqual)) {
+            key = this.removeStringFromEnd(key, this.operators.graterThanEqual);
+            let columnIndex = headers.indexOf(key) + 1;
+            // 各列の値の検証
+            if (columnIndex > 0 && row[columnIndex - 1] && row[columnIndex - 1] >= value) {
+              meetsCriteria = true;
+              break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+            }
+          } else if (key.endsWith(this.operators.lessThan)) {
+            key = this.removeStringFromEnd(key, this.operators.lessThan);
+            let columnIndex = headers.indexOf(key) + 1;
+            // 各列の値の検証
+            if (columnIndex > 0 && row[columnIndex - 1] && row[columnIndex - 1] < value) {
+              meetsCriteria = true;
+              break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+            }
+          } else if (key.endsWith(this.operators.lessThanEqual)) {
+            key = this.removeStringFromEnd(key, this.operators.lessThanEqual);
+            let columnIndex = headers.indexOf(key) + 1;
+            // 各列の値の検証
+            if (columnIndex > 0 && row[columnIndex - 1] && row[columnIndex - 1] <= value) {
+              meetsCriteria = true;
+              break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+            }
+          } else if (key.endsWith(this.operators.notEqual)) {
+            key = this.removeStringFromEnd(key, this.operators.notEqual);
+            let columnIndex = headers.indexOf(key) + 1;
+            // 各列の値の検証
+            if (columnIndex > 0 && row[columnIndex - 1] != value) {
+              meetsCriteria = true;
+              break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+            }
+          } else if (key.endsWith(this.operators.notEqualStrict)) {
+            key = this.removeStringFromEnd(key, this.operators.notEqualStrict);
+            let columnIndex = headers.indexOf(key) + 1;
+            // 各列の値の検証
+            if (columnIndex > 0 && row[columnIndex - 1] !== value) {
+              meetsCriteria = true;
+              break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+            }
+          } else if (key.endsWith(this.operators.equal)) {
+            key = this.removeStringFromEnd(key, this.operators.equal);
+            let columnIndex = headers.indexOf(key) + 1;
+            // 各列の値の検証
+            if (columnIndex > 0 && row[columnIndex - 1] == value) {
+              meetsCriteria = true;
+              break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+            }
+          } else {
+            let columnIndex = headers.indexOf(key) + 1;
+            // 各列の値の検証
+            if (columnIndex > 0 && row[columnIndex - 1] === value) {
+              meetsCriteria = true;
+              break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
+            }
           }
         }
         // 条件に合致した場合はその行番号を抽出
@@ -397,52 +487,38 @@ class Database {
    * @param {Object List} filterConditions
    */
   filterValuesWithAnd(values, filterConditions) {
-    const graterThan = this.operators.graterThan;
-    const graterThanEqual = this.operators.graterThanEqual;
-    const lessThan = this.operators.lessThan;
-    const lessThanEqual = this.operators.lessThanEqual;
-    const notEqual = this.operators.notEqual;
-    const notEqualStrict = this.operators.notEqualStrict;
-    const equal = this.operators.equal;
-    const headers = values[0];
-    const filteredValues = values.filter(function(row) {
-      return filterConditions.every(function(condition) {
+    const headers = values[0].filter(Boolean);
+    const filteredValues = values.filter(row => {
+      return filterConditions.every(condition => {
         let key = condition.key;
         let value = condition.value;
         // key に比較演算子が含まれているかを検証し処理を分岐
-        if (key.endsWith(graterThan)) {
-          let position = key.lastIndexOf(graterThan);
-          key = key.substring(0, position);
+        if (key.endsWith(this.operators.graterThan)) {
+          key = this.removeStringFromEnd(key, this.operators.graterThan);
           let columnIndex = headers.indexOf(key);
-          return row[columnIndex] > value;
-        } else if (key.endsWith(graterThanEqual)) {
-          let position = key.lastIndexOf(graterThanEqual);
-          key = key.substring(0, position);
+          return row[columnIndex] && row[columnIndex] > value;
+        } else if (key.endsWith(this.operators.graterThanEqual)) {
+          key = this.removeStringFromEnd(key, this.operators.graterThanEqual);
           let columnIndex = headers.indexOf(key);
-          return row[columnIndex] >= value;
-        } else if (key.endsWith(lessThan)) {
-          let position = key.lastIndexOf(lessThan);
-          key = key.substring(0, position);
+          return row[columnIndex] && row[columnIndex] >= value;
+        } else if (key.endsWith(this.operators.lessThan)) {
+          key = this.removeStringFromEnd(key, this.operators.lessThan);
           let columnIndex = headers.indexOf(key);
-          return row[columnIndex] < value;
-        } else if (key.endsWith(lessThanEqual)) {
-          let position = key.lastIndexOf(lessThanEqual);
-          key = key.substring(0, position);
+          return row[columnIndex] && row[columnIndex] < value;
+        } else if (key.endsWith(this.operators.lessThanEqual)) {
+          key = this.removeStringFromEnd(key, this.operators.lessThanEqual);
           let columnIndex = headers.indexOf(key);
-          return row[columnIndex] <= value;
-        } else if (key.endsWith(notEqual)) {
-          let position = key.lastIndexOf(notEqual);
-          key = key.substring(0, position);
+          return row[columnIndex] && row[columnIndex] <= value;
+        } else if (key.endsWith(this.operators.notEqual)) {
+          key = this.removeStringFromEnd(key, this.operators.notEqual);
           let columnIndex = headers.indexOf(key);
           return row[columnIndex] != value;
-        } else if (key.endsWith(notEqualStrict)) {
-          let position = key.lastIndexOf(notEqualStrict);
-          key = key.substring(0, position);
+        } else if (key.endsWith(this.operators.notEqualStrict)) {
+          key = this.removeStringFromEnd(key, this.operators.notEqualStrict);
           let columnIndex = headers.indexOf(key);
           return row[columnIndex] !== value;
-        } else if (key.endsWith(equal)) {
-          let position = key.lastIndexOf(equal);
-          key = key.substring(0, position);
+        } else if (key.endsWith(this.operators.equal)) {
+          key = this.removeStringFromEnd(key, this.operators.equal);
           let columnIndex = headers.indexOf(key);
           return row[columnIndex] == value;
         } else {
@@ -460,14 +536,7 @@ class Database {
    * @param {Object List} filterConditions
    */
   filterValuesWithOr(values, filterConditions) {
-    const graterThan = this.operators.graterThan;
-    const graterThanEqual = this.operators.graterThanEqual;
-    const lessThan = this.operators.lessThan;
-    const lessThanEqual = this.operators.lessThanEqual;
-    const notEqual = this.operators.notEqual;
-    const notEqualStrict = this.operators.notEqualStrict;
-    const equal = this.operators.equal;
-    const headers = values[0];
+    const headers = values[0].filter(Boolean);
     const filteredValues = [];
     for (let i = 1; i < values.length; i++) { // i = 1 : ヘッダーは除く
       let row = values[i];
@@ -477,63 +546,56 @@ class Database {
         let key = filterConditions[j].key;
         let value = filterConditions[j].value;
         // key に比較演算子が含まれているかを検証し処理を分岐
-        if (key.endsWith(graterThan)) {
-          let position = key.lastIndexOf(graterThan);
-          key = key.substring(0, position);
+        if (key.endsWith(this.operators.graterThan)) {
+          key = this.removeStringFromEnd(key, this.operators.graterThan);
           let columnIndex = headers.indexOf(key) + 1;
           // 各列の値の検証
-          if (columnIndex > 0 && row[columnIndex - 1] > value) {
+          if (columnIndex > 0 && row[columnIndex - 1] && row[columnIndex - 1] > value) {
             meetsCriteria = true;
             break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
           }
-        } else if (key.endsWith(graterThanEqual)) {
-          let position = key.lastIndexOf(graterThanEqual);
-          key = key.substring(0, position);
+        } else if (key.endsWith(this.operators.graterThanEqual)) {
+          key = this.removeStringFromEnd(key, this.operators.graterThanEqual);
           let columnIndex = headers.indexOf(key) + 1;
           // 各列の値の検証
-          if (columnIndex > 0 && row[columnIndex - 1] >= value) {
+          if (columnIndex > 0 && row[columnIndex - 1] && row[columnIndex - 1] >= value) {
             meetsCriteria = true;
             break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
           }
-        } else if (key.endsWith(lessThan)) {
-          let position = key.lastIndexOf(lessThan);
-          key = key.substring(0, position);
+        } else if (key.endsWith(this.operators.lessThan)) {
+          key = this.removeStringFromEnd(key, this.operators.lessThan);
           let columnIndex = headers.indexOf(key) + 1;
           // 各列の値の検証
-          if (columnIndex > 0 && row[columnIndex - 1] < value) {
+          if (columnIndex > 0 && row[columnIndex - 1] && row[columnIndex - 1] < value) {
             meetsCriteria = true;
             break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
           }
-        } else if (key.endsWith(lessThanEqual)) {
-          let position = key.lastIndexOf(lessThanEqual);
-          key = key.substring(0, position);
+        } else if (key.endsWith(this.operators.lessThanEqual)) {
+          key = this.removeStringFromEnd(key, this.operators.lessThanEqual);
           let columnIndex = headers.indexOf(key) + 1;
           // 各列の値の検証
-          if (columnIndex > 0 && row[columnIndex - 1] <= value) {
+          if (columnIndex > 0 && row[columnIndex - 1] && row[columnIndex - 1] <= value) {
             meetsCriteria = true;
             break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
           }
-        } else if (key.endsWith(notEqual)) {
-          let position = key.lastIndexOf(notEqual);
-          key = key.substring(0, position);
+        } else if (key.endsWith(this.operators.notEqual)) {
+          key = this.removeStringFromEnd(key, this.operators.notEqual);
           let columnIndex = headers.indexOf(key) + 1;
           // 各列の値の検証
           if (columnIndex > 0 && row[columnIndex - 1] != value) {
             meetsCriteria = true;
             break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
           }
-        } else if (key.endsWith(notEqualStrict)) {
-          let position = key.lastIndexOf(notEqualStrict);
-          key = key.substring(0, position);
+        } else if (key.endsWith(this.operators.notEqualStrict)) {
+          key = this.removeStringFromEnd(key, this.operators.notEqualStrict);
           let columnIndex = headers.indexOf(key) + 1;
           // 各列の値の検証
           if (columnIndex > 0 && row[columnIndex - 1] !== value) {
             meetsCriteria = true;
             break; // OR 検索: 1 つでも条件に合致すれば絞り込みを完了
           }
-        } else if (key.endsWith(equal)) {
-          let position = key.lastIndexOf(equal);
-          key = key.substring(0, position);
+        } else if (key.endsWith(this.operators.equal)) {
+          key = this.removeStringFromEnd(key, this.operators.equal);
           let columnIndex = headers.indexOf(key) + 1;
           // 各列の値の検証
           if (columnIndex > 0 && row[columnIndex - 1] == value) {
@@ -555,6 +617,17 @@ class Database {
       }
     }
     return filteredValues;
+  }
+
+  /**
+   * 文字列の最後尾から特定の文字列を削除する
+   * @param {String} targetString
+   * @param {String} subString
+   * @return {String}
+   */
+  removeStringFromEnd(targetString, subString) {
+    let position = targetString.lastIndexOf(subString);
+    return targetString.substring(0, position);
   }
 
 } // End of the class
