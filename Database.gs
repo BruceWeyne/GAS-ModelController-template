@@ -24,7 +24,7 @@ class Database {
     try {
       const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
       const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
@@ -86,7 +86,7 @@ class Database {
     try {
       const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
       const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
@@ -146,7 +146,7 @@ class Database {
     try {
       const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
       const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
@@ -185,7 +185,7 @@ class Database {
     try {
       const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
       const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
@@ -232,7 +232,7 @@ class Database {
     try {
       const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
       const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
@@ -276,7 +276,7 @@ class Database {
     try {
       const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
       const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
@@ -324,7 +324,7 @@ class Database {
     try {
       const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
       const values = dataRange.getValues(); // データを2D配列として取得
       const headers = values[0]; // ヘッダー行を取得（連想配列のキーとして使用）
@@ -371,7 +371,7 @@ class Database {
     try {
       const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
-      if (!sheet) throw new Error(this.sheetNameError); // スプレッドシートを開けなかった場合
+      if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()); // 2行目以降のデータ範囲を取得（ヘッダーを除外）
       // 削除の実行
       dataRange.clearContent();
