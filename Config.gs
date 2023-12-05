@@ -1,5 +1,5 @@
 function config() {
-  this.spreadsheetId = ""; // Spreadsheet ID: Database
+  this.spreadsheetId = ""; // Spreadsheet ID: Default Database
 
   // ===========================
   // Setting as you like
