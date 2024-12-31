@@ -14,6 +14,16 @@ class Database {
   }
 
   /**
+   * スプレッドシートの初期化
+   * @param {String} spreadsheetId
+   * 
+   */
+  initSpreadsheet(spreadsheetId) {
+    // spreadsheetId が無効な場合は　getActiveSpreadsheet で取得し、有効な場合はその値を元に取得する
+    return !spreadsheetId ? SpreadsheetApp.getActiveSpreadsheet() : SpreadsheetApp.openById(spreadsheetId);
+  }
+
+  /**
    * スプレッドシートからのデータ取得（AND）
    * @param {String} spreadsheetId
    * @param {String} sheetName
@@ -31,7 +41,7 @@ class Database {
    */
   databaseGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow) {
     try {
-      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const spreadsheet = this.initSpreadsheet(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
@@ -93,7 +103,7 @@ class Database {
    */
   databaseOrGet(spreadsheetId, sheetName, conditions, offsetRow, limitRow) {
     try {
-      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const spreadsheet = this.initSpreadsheet(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
@@ -153,7 +163,7 @@ class Database {
    */
   databaseInsert(spreadsheetId, sheetName, keyValuePairs) {
     try {
-      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const spreadsheet = this.initSpreadsheet(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
@@ -192,7 +202,7 @@ class Database {
    */
   databaseUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions) {
     try {
-      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const spreadsheet = this.initSpreadsheet(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
@@ -239,7 +249,7 @@ class Database {
    */
   databaseOrUpdate(spreadsheetId, sheetName, keyValuePair, filterConditions) {
     try {
-      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const spreadsheet = this.initSpreadsheet(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
@@ -283,7 +293,7 @@ class Database {
    */
   databaseDelete(spreadsheetId, sheetName, filterConditions) {
     try {
-      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const spreadsheet = this.initSpreadsheet(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
@@ -362,7 +372,7 @@ class Database {
    */
   databaseOrDelete(spreadsheetId, sheetName, filterConditions) {
     try {
-      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const spreadsheet = this.initSpreadsheet(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getDataRange(); // データの範囲を取得
@@ -468,7 +478,7 @@ class Database {
    */
   databaseTruncate(spreadsheetId, sheetName) {
     try {
-      const spreadsheet = SpreadsheetApp.openById(spreadsheetId); // スプレッドシートを開く
+      const spreadsheet = this.initSpreadsheet(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
       const dataRange = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()); // 2行目以降のデータ範囲を取得（ヘッダーを除外）
