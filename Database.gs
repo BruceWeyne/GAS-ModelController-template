@@ -492,6 +492,26 @@ class Database {
   }
 
   /**
+   * スプレッドシートのヘッダーを取得する
+   * @param {String} spreadsheetId
+   * @param {String} sheetName
+   * @return {Object} 
+   */
+  databaseHeaders(spreadsheetId, sheetName) {
+    try {
+      const spreadsheet = this.initSpreadsheet(spreadsheetId); // スプレッドシートを開く
+      const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
+      if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
+      // ヘッダー（1行目）を取得
+      const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+      return headers;
+
+    } catch (error) {
+      return error;
+    }
+  }
+
+  /**
    * AND フィルター
    * @param {List List} values : range.getValues()
    * @param {Object List} filterConditions

@@ -70,4 +70,12 @@ class Model extends Database {
     return result;
   }
 
+  /**
+   * スプレッドシートのヘッダーを取得する
+   */
+  getHeaders(sheetName) {
+    const result = super.databaseHeaders(this.spreadsheetId, sheetName); // データの全削除
+    return result;
+  }
+
 } // End of the class
