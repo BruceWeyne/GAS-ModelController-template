@@ -341,7 +341,7 @@ class Database {
           }
         });
         // 条件に合致した場合はその行番号を抽出
-        if (meetsConditions) {
+        if (meetsConditions && index !== 0) { // ヘッダー行は除く
           rowsToDelete.push(index + 1); // 行番号を保存
         }
       });
