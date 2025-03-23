@@ -481,10 +481,19 @@ class Database {
       const spreadsheet = this.initSpreadsheet(spreadsheetId); // スプレッドシートを開く
       const sheet = spreadsheet.getSheetByName(sheetName); // 指定したシートを取得
       if (!sheet) throw new Error(this.sheetNameError); // シートを開けなかった場合
-      const dataRange = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()); // 2行目以降のデータ範囲を取得（ヘッダーを除外）
-      // 削除の実行
-      dataRange.clearContent();
-      return {'success': true, 'error': ''};
+
+      // 存在するデータ数によって処理を分岐
+      if (sheet.getLastRow() === 1) { // データが存在しない（ヘッダー行のみの）場合
+        // 何もせず返却
+        return {'success': true, 'error': 'No data to truncate'};
+      
+      } else { // ヘッダー以外にもデータが存在する場合
+        // データの削除
+        const dataRange = sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()); // 2行目以降のデータ範囲を取得（ヘッダーを除外）
+        // 削除の実行
+        dataRange.clearContent();
+        return {'success': true, 'error': ''};
+      }
 
     } catch (error) {
       return {'success': false, 'error': error.stack};
