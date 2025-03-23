@@ -181,7 +181,7 @@ class Database {
       return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'success': false, 'error': error};
+      return {'success': false, 'error': error.stack};
     }
   }
 
@@ -227,7 +227,7 @@ class Database {
       return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'success': false, 'error': error};
+      return {'success': false, 'error': error.stack};
     }
   }
 
@@ -274,7 +274,7 @@ class Database {
       return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'success': false, 'error': error};
+      return {'success': false, 'error': error.stack};
     }
   }
 
@@ -352,7 +352,7 @@ class Database {
       return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'success': false, 'error': error};
+      return {'success': false, 'error': error.stack};
     }
   }
 
@@ -466,7 +466,7 @@ class Database {
       return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'success': false, 'error': error};
+      return {'success': false, 'error': error.stack};
     }
   }
 
@@ -487,7 +487,7 @@ class Database {
       return {'success': true, 'error': ''};
 
     } catch (error) {
-      return {'success': false, 'error': error};
+      return {'success': false, 'error': error.stack};
     }
   }
 
